@@ -1,3 +1,5 @@
+import countries from "./country.js";
+
 class TrieNode {
   constructor() {
     this.children = {};
@@ -51,12 +53,8 @@ class Trie {
 
 // Usage example
 const trie = new Trie();
-trie.insert("apple");
-trie.insert("application");
-trie.insert("app");
-trie.insert("banana");
-trie.insert("bat");
-trie.insert("cat");
+for (let i = 0; i < countries.length; i++)
+  trie.insert(countries[i].toLowerCase());
 
 const inputElement = document.getElementsByClassName("container_input")[0];
 const suggest = document.getElementsByClassName("container_suggestions")[0];
@@ -69,8 +67,7 @@ inputElement.addEventListener("input", function (event) {
   suggest.innerHTML = "";
   suggest.style.display = "none";
   const inputValue = event.target.value;
-  let suggestions = trie.suggest(inputValue);
-  console.log(trie.suggest(inputValue));
+  let suggestions = trie.suggest(inputValue.toLowerCase());
   inputValue &&
     suggestions.forEach((element, index) => {
       suggest.style.display = "";
@@ -78,7 +75,6 @@ inputElement.addEventListener("input", function (event) {
       word.innerText = element;
       word.tabIndex = index + 1;
       word.className = "container_suggestions_word";
-      console.log(word);
       fragment.append(word);
     });
   suggest.append(fragment);
