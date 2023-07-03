@@ -1,84 +1,53 @@
 import countries from "./country.js";
+import Trie from "./trie.js";
 
-class TrieNode {
-  constructor() {
-    this.children = {};
-    this.isEndOfWord = false;
-  }
-}
-
-class Trie {
-  constructor() {
-    this.root = new TrieNode();
-  }
-
-  insert(word) {
-    let node = this.root;
-    for (let i = 0; i < word.length; i++) {
-      const char = word[i];
-      if (!node.children[char]) {
-        node.children[char] = new TrieNode();
-      }
-      node = node.children[char];
-    }
-    node.isEndOfWord = true;
-  }
-
-  findWords(node, prefix, suggestions) {
-    if (node.isEndOfWord) {
-      suggestions.push(prefix);
-    }
-
-    for (const key in node.children) {
-      const char = key;
-      this.findWords(node.children[key], prefix + char, suggestions);
-    }
-  }
-
-  suggest(prefix) {
-    let node = this.root;
-    for (let i = 0; i < prefix.length; i++) {
-      const char = prefix[i];
-      if (!node.children[char]) {
-        return [];
-      }
-      node = node.children[char];
-    }
-
-    const suggestions = [];
-    this.findWords(node, prefix, suggestions);
-    return suggestions;
-  }
-}
-
-// Usage example
 const trie = new Trie();
+
+//inserting words in trie
 for (let i = 0; i < countries.length; i++)
   trie.insert(countries[i].toLowerCase());
 
 const inputElement = document.getElementsByClassName("container_input")[0];
 const suggest = document.getElementsByClassName("container_suggestions")[0];
 const fragment = document.createDocumentFragment();
+
 suggest.style.display = "none";
 let selectedOptionIndex = -1;
 
-inputElement.addEventListener("input", function (event) {
+const debounce = (fn) => {
+  let timeoutId;
+
+  return (...args) => {
+    // cancel the previous timer
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    // setup a new timer
+    timeoutId = setTimeout(() => {
+      fn.apply(null, args);
+    }, 500);
+  };
+};
+
+const inputHandler = debounce(function (event) {
   fragment.innerHTML = "";
   suggest.innerHTML = "";
   suggest.style.display = "none";
   const inputValue = event.target.value;
-  let suggestions = trie.suggest(inputValue.toLowerCase());
-  inputValue &&
+  let suggestions = inputValue && trie.suggest(inputValue.toLowerCase());
+  inputValue.length > 0 &&
     suggestions.forEach((element, index) => {
-      suggest.style.display = "";
       const word = document.createElement("li");
       word.innerText = element;
       word.tabIndex = index + 1;
       word.className = "container_suggestions_word";
       fragment.append(word);
+      suggest.style.display = "";
     });
   suggest.append(fragment);
 });
+
+inputElement.addEventListener("input", inputHandler);
 
 inputElement.addEventListener("keydown", function (event) {
   const key = event.key;
