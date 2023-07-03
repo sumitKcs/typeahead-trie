@@ -5,16 +5,25 @@ body {
     width: 100vw;
     overflow-x: hidden;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content:  center;
     justify-items: center;
     background-color: #202124;
 }
-
+header {
+    width: 100vw;
+    padding: 2rem;
+    font-size: xx-large;
+    color: white;
+    text-align: center;
+    align-self: center;
+    letter-spacing: 4px;
+}
 .container {
     height: 90%;
     width: 50%;
     padding: 1rem;
+    align-self: center;
     display: flex;
     flex-direction: column;
     justify-content:  center;
